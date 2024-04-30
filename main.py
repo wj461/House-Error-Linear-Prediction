@@ -11,7 +11,6 @@ Q, R = np.linalg.qr(A)
 
 x = np.linalg.solve(R, np.dot(Q.T, b))
 
-print(x)
 
 test = np.array([10, 5, 3])
 
