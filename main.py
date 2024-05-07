@@ -9,11 +9,13 @@ test_o = pd.read_csv('./data/test.csv')
 def function_2(p_x, x):
     return p_x * x[0]
 
-def two_d_linear_regression():
-    data = pd.read_csv('./data/2d.csv')
-    test = pd.read_csv('./data/test_2d.csv')
-    df = data[['CRIM','MEDV']]
-    df.plot(kind = 'scatter', x = 'CRIM', y = 'MEDV')
+def two_d_linear_regression(need):
+    data = data_o[need]
+    # test = pd.read_csv('./data/test_3d.csv')
+    test = test_o[need[: -1]]
+
+    df = data[need]
+    df.plot(kind = 'scatter', x = need[0], y = need[1])
 
     data = data.values
     test = test.values
@@ -35,7 +37,6 @@ def two_d_linear_regression():
 
     plt.plot(test[:, 0], ans, 'ro')
 
-    plt.show() 
 
 def function_3(p_m, x):
         a = np.dot(p_m, x)
@@ -76,8 +77,6 @@ def three_d_linear_regression(need):
 
     ax1.scatter(test[:, 0], test[:, 1], ans, c='r')
 
-    plt.show() 
-
 
 def all_D():
     data = data_o.values
@@ -91,10 +90,13 @@ def all_D():
     x = np.linalg.solve(R, np.dot(Q.T, b))
     print(np.dot(test, x))
 
-# two_d_linear_regression()
+need = ['AGE', 'MEDV']
+two_d_linear_regression(need)
 
 need = ['CRIM', 'AGE', 'MEDV']
 three_d_linear_regression(need)
+
+plt.show() 
 all_D()
 
 
