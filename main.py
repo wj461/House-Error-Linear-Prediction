@@ -55,7 +55,7 @@ def three_d_linear_regression(need):
 
     fig = plt.figure()
     ax1 = plt.axes(projection='3d')
-    ax1.scatter(data[need[0]], data[need[1]], data[need[2]])
+    # ax1.scatter(data[need[0]], data[need[1]], data[need[2]])
     ax1.set_xlabel(need[0])
     ax1.set_ylabel(need[1])
     ax1.set_zlabel(need[2])
