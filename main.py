@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
+from sklearn.decomposition import TruncatedSVD
 
 data_o = pd.read_csv('./data/housing_data.csv')
 test_o = pd.read_csv('./data/test.csv')
@@ -44,12 +45,13 @@ def function_3(p_m, x):
 
 def three_d_linear_regression(need):
     data = data_o[need]
+
     # test = pd.read_csv('./data/test_3d.csv')
     test = test_o[need[: -1]]
 
     fig = plt.figure()
     ax1 = plt.axes(projection='3d')
-    ax1.scatter(data[need[0]], data[need[1]], data[need[2]])
+    # ax1.scatter(data[need[0]], data[need[1]], data[need[2]])
     ax1.set_xlabel(need[0])
     ax1.set_ylabel(need[1])
     ax1.set_zlabel(need[2])
@@ -65,8 +67,11 @@ def three_d_linear_regression(need):
     x = np.linalg.solve(R, np.dot(Q.T, b))
 
     p_m = np.array([[0, 0]])
-    for i in range(0, 100):
-        for j in range(0, 100):
+
+    x_p,y_p,_ = data_o[need].max().astype(int)
+    print("x, y : ", x_p, y_p)
+    for i in range(0, x_p+1):
+        for j in range(0, y_p+1):
             p_m = np.vstack([p_m, [i, j]])
 
     p_z = function_3(p_m, x)
@@ -76,29 +81,83 @@ def three_d_linear_regression(need):
     print("ans : ", ans)
 
     ax1.scatter(test[:, 0], test[:, 1], ans, c='r')
+    ax1.scatter(test[:, 0], test[:, 1], test_o['MEDV'], c='purple')
 
+def svd(need):
+    np.set_printoptions(suppress=True)
+    k = 9
+
+    data = data_o.values
+    # test = test_o[need[: -1]].values
+    test = test_o.drop(columns='MEDV').values
+
+    A = data[:, :-1]
+    b = data[:, -1].T
+
+    U, S, VT = np.linalg.svd(A)
+
+    print(S)
+
+    U_k = U[:, :k]
+    S_k = np.diag(S[:k])
+    VT_k = VT[:k, :]
+    print(U_k.shape, S_k.shape, VT_k.shape)
+
+    # Construct the approximate matrix
+    A_k = np.dot(U_k, np.dot(S_k, VT_k))
+
+    Q, R = np.linalg.qr(A_k)
+    # print("SVD Q,R", Q, R)
+
+    x = np.linalg.solve(R, np.dot(Q.T, b))
+    print(np.dot(test, x))
+
+def svd_2():
+    data = data_o.values
+    test = test_o.drop(columns=['MEDV']).values
+
+    A = data[:, :-1]
+    b = data[:, -1].T
+
+    svd = TruncatedSVD(n_components=2)
+
+    X_svd = svd.fit_transform(A)
+    # print(X_svd)
+    plt.figure(figsize=(8, 6))
+    ax1 = plt.axes(projection='3d')
+    ax1.scatter(X_svd[:, 0], X_svd[:, 1], b, cmap='viridis')
+    # ax1.xlabel('1')
+    # ax1.ylabel('2')
+
+    plt.show()
 
 def all_D():
     data = data_o.values
-    test = test_o.values
+    test = test_o.drop(columns=['MEDV']).values
 
     A = data[:, :-1]
     b = data[:, -1].T
 
     Q, R = np.linalg.qr(A)
+    # print("all Q,R", Q, R)
 
     x = np.linalg.solve(R, np.dot(Q.T, b))
     print(np.dot(test, x))
 
-need = ['AGE', 'MEDV']
-two_d_linear_regression(need)
+# need = ['AGE', 'MEDV']
+# two_d_linear_regression(need)
 
-need = ['CRIM', 'AGE', 'MEDV']
-three_d_linear_regression(need)
+# need = ['TAX', 'AGE', 'MEDV']
+# three_d_linear_regression(need)
 
-plt.show() 
+need = ['TAX', 'RM', 'MEDV']
+# three_d_linear_regression(need)
+
+
+# plt.show() 
 all_D()
-
+svd(need)
+# svd_2()
 
 # test data
 # A = np.array([
