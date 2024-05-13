@@ -3,9 +3,12 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 from sklearn.decomposition import TruncatedSVD
+from sklearn import preprocessing
 
-data_o = pd.read_csv('./data/housing_data.csv')
-test_o = pd.read_csv('./data/test.csv')
+# data_o = pd.read_csv('./data/housing_data.csv')
+data_o = pd.read_csv('./data/housing_data_normalized.csv')
+test_o = pd.read_csv('./data/test_normalized.csv')
+
 
 def function_2(p_x, x):
     return p_x * x[0]
@@ -51,7 +54,7 @@ def three_d_linear_regression(need):
 
     fig = plt.figure()
     ax1 = plt.axes(projection='3d')
-    # ax1.scatter(data[need[0]], data[need[1]], data[need[2]])
+    ax1.scatter(data[need[0]], data[need[1]], data[need[2]])
     ax1.set_xlabel(need[0])
     ax1.set_ylabel(need[1])
     ax1.set_zlabel(need[2])
@@ -70,8 +73,8 @@ def three_d_linear_regression(need):
 
     x_p,y_p,_ = data_o[need].max().astype(int)
     print("x, y : ", x_p, y_p)
-    for i in range(0, x_p+1):
-        for j in range(0, y_p+1):
+    for i in np.arange(0, x_p+1, 0.01):
+        for j in np.arange(0, y_p+1, 0.01):
             p_m = np.vstack([p_m, [i, j]])
 
     p_z = function_3(p_m, x)
@@ -85,11 +88,14 @@ def three_d_linear_regression(need):
 
 def svd(need):
     np.set_printoptions(suppress=True)
-    k = 9
+    k = 8
 
     data = data_o.values
     # test = test_o[need[: -1]].values
     test = test_o.drop(columns='MEDV').values
+    # print(data)
+    # print()
+    # print(test)
 
     A = data[:, :-1]
     b = data[:, -1].T
@@ -147,12 +153,8 @@ def all_D():
 # need = ['AGE', 'MEDV']
 # two_d_linear_regression(need)
 
-# need = ['TAX', 'AGE', 'MEDV']
-# three_d_linear_regression(need)
-
-need = ['TAX', 'RM', 'MEDV']
-# three_d_linear_regression(need)
-
+need = ['TAX', 'AGE', 'MEDV']
+three_d_linear_regression(need)
 
 # plt.show() 
 all_D()
