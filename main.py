@@ -5,9 +5,10 @@ from mpl_toolkits.mplot3d import Axes3D
 from sklearn.decomposition import TruncatedSVD
 from sklearn import preprocessing
 
-# data_o = pd.read_csv('./data/housing_data.csv')
-data_o = pd.read_csv('./data/housing_data_normalized.csv')
-test_o = pd.read_csv('./data/test_normalized.csv')
+data_o = pd.read_csv('./data/housing_data.csv')
+test_o = pd.read_csv('./data/test.csv')
+# data_o = pd.read_csv('./data/housing_data_normalized.csv')
+# test_o = pd.read_csv('./data/test_normalized.csv')
 
 
 def function_2(p_x, x):
@@ -73,8 +74,10 @@ def three_d_linear_regression(need):
 
     x_p,y_p,_ = data_o[need].max().astype(int)
     print("x, y : ", x_p, y_p)
-    for i in np.arange(0, x_p+1, 0.01):
-        for j in np.arange(0, y_p+1, 0.01):
+    # for i in np.arange(0, x_p+1, 0.01):
+    #     for j in np.arange(0, y_p+1, 0.01):
+    for i in np.arange(0, x_p+1,0.1):
+        for j in np.arange(0, y_p+1,0.1):
             p_m = np.vstack([p_m, [i, j]])
 
     p_z = function_3(p_m, x)
@@ -88,21 +91,16 @@ def three_d_linear_regression(need):
 
 def svd(need):
     np.set_printoptions(suppress=True)
-    k = 8
+    k = 9
 
     data = data_o.values
     # test = test_o[need[: -1]].values
     test = test_o.drop(columns='MEDV').values
-    # print(data)
-    # print()
-    # print(test)
 
     A = data[:, :-1]
     b = data[:, -1].T
 
     U, S, VT = np.linalg.svd(A)
-
-    print(S)
 
     U_k = U[:, :k]
     S_k = np.diag(S[:k])
@@ -153,19 +151,13 @@ def all_D():
 # need = ['AGE', 'MEDV']
 # two_d_linear_regression(need)
 
-need = ['TAX', 'AGE', 'MEDV']
+need = ['RM', 'LSTAT', 'MEDV']
 three_d_linear_regression(need)
 
-# plt.show() 
+plt.show() 
 all_D()
-svd(need)
+# svd(need)
 # svd_2()
 
-# test data
-# A = np.array([
-#     [10, 5, 3], 
-#     [20, 7, 4],
-#     [15, 6, 3.5]])
-
-# b = np.array( [100 , 150, 120]).T
-# test = np.array([10, 5, 3])
+correlation = data_o.corr()['MEDV'].abs().sort_values(ascending=False)
+print(correlation)
