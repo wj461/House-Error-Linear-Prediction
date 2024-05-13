@@ -3,8 +3,11 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 
-data_o = pd.read_csv('./data/housing_data.csv')
-test_o = pd.read_csv('./data/test.csv')
+# data_o = pd.read_csv('./data/housing_data.csv')
+# test_o = pd.read_csv('./data/test.csv')
+
+data_o = pd.read_csv('./data/housing_data_normalized.csv')
+test_o = pd.read_csv('./data/test_normalized.csv')
 
 def function_2(p_x, x):
     return p_x * x[0]
@@ -49,7 +52,7 @@ def three_d_linear_regression(need):
 
     fig = plt.figure()
     ax1 = plt.axes(projection='3d')
-    # ax1.scatter(data[need[0]], data[need[1]], data[need[2]])
+    ax1.scatter(data[need[0]], data[need[1]], data[need[2]])
     ax1.set_xlabel(need[0])
     ax1.set_ylabel(need[1])
     ax1.set_zlabel(need[2])
@@ -66,8 +69,10 @@ def three_d_linear_regression(need):
 
     p_m = np.array([[0, 0]])
     x_p,y_p,_ = data_o[need].max().astype(int)
-    for i in range(0, x_p+1):
-        for j in range(0, y_p+1):
+    # for i in range(0, x_p+1):
+    #     for j in range(0, y_p+1):
+    for i in np.arange(0, x_p+1, 0.01):
+        for j in np.arange(0, y_p+1, 0.01):
             p_m = np.vstack([p_m, [i, j]])
 
     p_z = function_3(p_m, x)
@@ -76,10 +81,10 @@ def three_d_linear_regression(need):
     ans = np.dot(test, x)
     print("ans : ", ans)
 
-    ax1.scatter(test[:, 0], test[:, 1], ans, c='r')
-    ax1.text(test[:, 0][0]-10, test[:, 1][0], ans[0], f'{ans[0]:.1f}', None)
-    ax1.scatter(test[:, 0], test[:, 1], test_o[need[-1]], c='purple')
-    ax1.text(test[:, 0][0]-10, test[:, 1][0], test_o[need[-1]][0], f'{test_o[need[-1]][0]:.1f}', None)
+    # ax1.scatter(test[:, 0], test[:, 1], ans, c='r')
+    # ax1.text(test[:, 0][0], test[:, 1][0], ans[0], f'{ans[0]:.1f}', None)
+    # ax1.scatter(test[:, 0], test[:, 1], test_o[need[-1]], c='purple')
+    # ax1.text(test[:, 0][0], test[:, 1][0], test_o[need[-1]][0], f'{test_o[need[-1]][0]:.1f}', None)
 
 
 def all_D():
