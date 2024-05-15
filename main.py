@@ -49,6 +49,7 @@ def three_d_linear_regression(need, data, test, norm = False):
     p_z = function_3(p_m, x)
     ax1.plot(p_m[:,0], p_m[:,1], p_z, c='r', alpha=0.5)
 
+    print("x : ", x)
     ans = np.dot(test, x)
     print("ans : ", ans)
 
@@ -90,9 +91,12 @@ print("Least squares", cal_loss(ans, test_o[need[-1]]))
 data = data_norm_o[need]
 test = test_norm_o[need[: -1]]
 ans = three_d_linear_regression(need,data, test, True)
-print("Least squares", cal_loss(ans, test_o[need[-1]]))
+print("Least squares", cal_loss(ans, test_norm_o[need[-1]]))
 
 # plt.show() 
 print("original data")
 ans = all_D()
 print("Least squares", cal_loss(ans, test_o[need[-1]]))
+
+correlation = data_o.corr()['MEDV'].abs().sort_values(ascending=False)
+print(correlation)
