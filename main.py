@@ -57,6 +57,8 @@ def three_d_linear_regression(need, data, test, norm = False):
     ax1.scatter(test[:, 0], test[:, 1], test_o[need[-1]], c='purple')
     ax1.text(test[:, 0][0], test[:, 1][0], test_o[need[-1]][0], f'{test_o[need[-1]][0]:.1f}', None)
 
+    return ans
+
 def all_D():
     data = data_o.values
     temp = test_o.drop('MEDV', axis = 1)
@@ -69,6 +71,8 @@ def all_D():
 
     x = np.linalg.solve(R, np.dot(Q.T, b))
     print(np.dot(test, x))
+    return (np.dot(test, x))
+    
 
 def cal_loss(ans, test):
     loss = 0
@@ -79,20 +83,16 @@ def cal_loss(ans, test):
 need = ['TAX', 'AGE', 'MEDV']
 data = data_o[need]
 test = test_o[need[: -1]]
-three_d_linear_regression(need,data, test)
+ans = three_d_linear_regression(need,data, test)
+print("Least squares", cal_loss(ans, test_o[need[-1]]))
 
-# data = data_norm_o[need]
-# test = test_norm_o[need[: -1]]
-# three_d_linear_regression(need,data, test, True)
 
-plt.show() 
-all_D()
+data = data_norm_o[need]
+test = test_norm_o[need[: -1]]
+ans = three_d_linear_regression(need,data, test, True)
+print("Least squares", cal_loss(ans, test_o[need[-1]]))
 
-# test data
-# A = np.array([
-#     [10, 5, 3], 
-#     [20, 7, 4],
-#     [15, 6, 3.5]])
-
-# b = np.array( [100 , 150, 120]).T
-# test = np.array([10, 5, 3])
+# plt.show() 
+print("original data")
+ans = all_D()
+print("Least squares", cal_loss(ans, test_o[need[-1]]))
