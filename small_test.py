@@ -4,10 +4,12 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 
 data_o = pd.read_csv('./data/chat_gpt.csv')
-test_o = pd.read_csv('./data/chat_gpt_test.csv')
+test_o = pd.read_csv('./data/chat_gpt.csv')
+# test_o = pd.read_csv('./data/chat_gpt_test.csv')
 
 data_norm_o = pd.read_csv('./data/chat_gpt_normalized.csv')
-test_norm_o = pd.read_csv('./data/chat_gpt_test_normalized.csv')
+test_norm_o = pd.read_csv('./data/chat_gpt_normalized.csv')
+# test_norm_o = pd.read_csv('./data/chat_gpt_test_normalized.csv')
 
 def function_3(p_m, x):
         a = np.dot(p_m, x)
@@ -17,7 +19,7 @@ def three_d_linear_regression(need, data, test, norm = False):
 
     fig = plt.figure()
     ax1 = plt.axes(projection='3d')
-    ax1.scatter(data[need[0]], data[need[1]], data[need[2]])
+    # ax1.scatter(data[need[0]], data[need[1]], data[need[2]])
     ax1.set_xlabel(need[0])
     ax1.set_ylabel(need[1])
     ax1.set_zlabel(need[2])
@@ -52,11 +54,18 @@ def three_d_linear_regression(need, data, test, norm = False):
 
     ans = np.dot(test, x)
     print("ans : ", ans)
+    return ans
 
-    # ax1.scatter(test[:, 0], test[:, 1], ans, c='r')
-    # ax1.text(test[:, 0][0], test[:, 1][0], ans[0], f'{ans[0]:.1f}', None)
-    # ax1.scatter(test[:, 0], test[:, 1], test_o[need[-1]], c='purple')
-    # ax1.text(test[:, 0][0], test[:, 1][0], test_o[need[-1]][0], f'{test_o[need[-1]][0]:.1f}', None)
+    ax1.scatter(test[:, 0], test[:, 1], ans, c='r')
+    ax1.text(test[:, 0][0], test[:, 1][0], ans[0], f'{ans[0]:.1f}', None)
+    ax1.scatter(test[:, 0], test[:, 1], test_o[need[-1]], c='purple')
+    ax1.text(test[:, 0][0], test[:, 1][0], test_o[need[-1]][0], f'{test_o[need[-1]][0]:.1f}', None)
+
+def cal_loss(ans, test):
+    loss = 0
+    for i in range(len(ans)):
+        loss += (ans[i] - test[i])**2
+    return loss
 
 need = ['House Area (Square Meters)',
 'Distance to City Center (Kilometers)',
@@ -64,11 +73,14 @@ need = ['House Area (Square Meters)',
 
 data = data_o[need]
 test = test_o[need[: -1]]
-three_d_linear_regression(need,data, test)
+ans = three_d_linear_regression(need,data, test)
+print("Least squares", cal_loss(ans, test_o[need[-1]]))
 
-# data = data_norm_o[need]
-# test = test_norm_o[need[: -1]]
-# three_d_linear_regression(need,data, test, True)
+
+data = data_norm_o[need]
+test = test_norm_o[need[: -1]]
+ans = three_d_linear_regression(need,data, test, True)
+print("Least squares", cal_loss(ans, test_o[need[-1]]))
 
 plt.show() 
 
