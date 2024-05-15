@@ -69,6 +69,7 @@ def three_d_linear_regression(need):
 
     p_m = np.array([[0, 0]])
     x_p,y_p,_ = data_o[need].max().astype(int)
+    print(x_p, y_p)
     # for i in range(0, x_p+1):
     #     for j in range(0, y_p+1):
     for i in np.arange(0, x_p+1, 0.01):
