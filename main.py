@@ -73,13 +73,27 @@ def all_D():
     x = np.linalg.solve(R, np.dot(Q.T, b))
     print(np.dot(test, x))
     return (np.dot(test, x))
+
+def all_D_norm():
+    data = data_norm_o.values
+    temp = test_norm_o.drop('MEDV', axis = 1)
+    test = temp.values
+
+    A = data[:, :-1]
+    b = data[:, -1].T
+
+    Q, R = np.linalg.qr(A)
+
+    x = np.linalg.solve(R, np.dot(Q.T, b))
+    print(np.dot(test, x))
+    return (np.dot(test, x))
     
 
 def cal_loss(ans, test):
     loss = 0
     for i in range(len(ans)):
         loss += (ans[i] - test[i])**2
-    return loss
+    return loss//len(ans)
 
 need = ['TAX', 'AGE', 'MEDV']
 data = data_o[need]
@@ -97,6 +111,8 @@ print("Least squares", cal_loss(ans, test_norm_o[need[-1]]))
 print("original data")
 ans = all_D()
 print("Least squares", cal_loss(ans, test_o[need[-1]]))
+ans = all_D_norm()
+print("Least squares", cal_loss(ans, test_o[need[-1]]))
 
-correlation = data_o.corr()['MEDV'].abs().sort_values(ascending=False)
-print(correlation)
+# correlation = data_o.corr()['MEDV'].abs().sort_values(ascending=False)
+# print(correlation)
