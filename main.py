@@ -2,63 +2,82 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
+from sklearn.preprocessing import StandardScaler
 
 data_o = pd.read_csv('./data/housing_data.csv')
 test_o = pd.read_csv('./data/test.csv')
-
-data_norm_o= pd.read_csv('./data/housing_data_normalized.csv')
-test_norm_o = pd.read_csv('./data/test_normalized.csv')
+test_norm_o = pd.read_csv('./data/test_norm.csv')
 
 def function_3(p_m, x):
         a = np.dot(p_m, x)
         return a
 
-def three_d_linear_regression(need, data, test, norm = False):
-    fig = plt.figure()
-    ax1 = plt.axes(projection='3d')
-    # ax1.scatter(data[need[0]], data[need[1]], data[need[2]])
-    ax1.set_xlabel(need[0])
-    ax1.set_ylabel(need[1])
-    ax1.set_zlabel(need[2])
+def three_d_linear_regression(need, norm = False, draw = True):
+    if norm:
+        scaler = StandardScaler()
+        data = scaler.fit_transform(data_o[need[:-1]])
+        draw_d = np.column_stack((data, data_o['MEDV']))
+        draw_d = pd.DataFrame(draw_d, columns=need)
+        test = test_norm_o[need[:-1]]
+        test = test.values
 
-    data = data.values
-    test = test.values
+        A = np.column_stack((np.ones(data.shape[0]), data))
+        b = data_o['MEDV']
+    else:
+        draw_d = data_o[need]
+        data = data_o[need]
+        data = data.values
+        test = test_o[need[:-1]]
+        test = test.values
 
-    A = data[:, :-1]
-    b = data[:, -1].T
+        A = data[:, :-1]
+        A = np.column_stack((np.ones(A.shape[0]), A))
+        b = data[:, -1]
+
+    if draw:
+        fig = plt.figure()
+        ax1 = plt.axes(projection='3d')
+        # ax1.scatter(draw_d[need[0]], draw_d[need[1]], draw_d[need[2]])
+        ax1.set_xlabel(need[0])
+        ax1.set_ylabel(need[1])
+        ax1.set_zlabel(need[2])
+
 
     Q, R = np.linalg.qr(A)
 
     x = np.linalg.solve(R, np.dot(Q.T, b))
 
-    p_m = np.array([[0, 0]])
 
-    if not norm:
+    if not norm and draw:
         print("not norm")
+        p_m = np.array([[0, 0]])
         x_p,y_p,_ = data_o[need].max().astype(int)
-        for i in range(0, x_p+1):
-            for j in range(0, y_p+1):
+        for i in np.arange(0, x_p+1, 0.5):
+            for j in np.arange(0, y_p+1, 0.5):
                 p_m = np.vstack([p_m, [i, j]])
-    else:
+    elif draw:
         print("norm")
-        x_p,y_p,_ = data_norm_o[need].max().astype(int)
-        for i in np.arange(0, x_p+1, 0.01):
-            for j in np.arange(0, y_p+1, 0.01):
+        p_m = np.array([[0, 0]])
+        x_p,y_p,_ = draw_d[need].max().astype(int)
+        for i in np.arange(-2, x_p+1, 0.05):
+            for j in np.arange(-2, y_p+1, 0.05):
                 p_m = np.vstack([p_m, [i, j]])
-
-    p_z = function_3(p_m, x)
-    ax1.plot(p_m[:,0], p_m[:,1], p_z, c='r', alpha=0.5)
 
     print("x : ", x)
+    test = np.column_stack((np.ones(test.shape[0]), test))
     ans = np.dot(test, x)
-    print("ans : ", ans)
+    # print("ans : ", ans)
 
-    ax1.scatter(test[:, 0], test[:, 1], ans, c='r')
-    ax1.text(test[:, 0][0], test[:, 1][0], ans[0], f'{ans[0]:.1f}', None)
-    ax1.scatter(test[:, 0], test[:, 1], test_o[need[-1]], c='purple')
-    ax1.text(test[:, 0][0], test[:, 1][0], test_o[need[-1]][0], f'{test_o[need[-1]][0]:.1f}', None)
+    if draw:
+        p_z = function_3(p_m, x[1:]) + x[0]
+        ax1.plot(p_m[:,0], p_m[:,1], p_z, c='r', alpha=0.5)
+        ax1.scatter(test[:, 1], test[:, 2], ans, c='r')
+        ax1.text(test[:, 1][0], test[:, 2][0], ans[0], f'{ans[0]:.1f}', None)
+        ax1.scatter(test[:, 1], test[:, 2], test_o[need[-1]], c='purple')
+        ax1.text(test[:, 1][0], test[:, 2][0], test_o[need[-1]][0], f'{test_o[need[-1]][0]:.1f}', None)
 
-    return ans
+    mse_np = np.mean((test_o[need[-1]] - ans)**2)
+    print("MSE using numpy's solution: ", mse_np)
 
 def all_D():
     data = data_o.values
@@ -66,53 +85,24 @@ def all_D():
     test = temp.values
 
     A = data[:, :-1]
-    b = data[:, -1].T
+    A = np.column_stack((np.ones(A.shape[0]), A))
+    b = data[:, -1]
 
     Q, R = np.linalg.qr(A)
 
     x = np.linalg.solve(R, np.dot(Q.T, b))
-    print(np.dot(test, x))
-    return (np.dot(test, x))
+    ans = np.dot(A, x)
 
-def all_D_norm():
-    data = data_norm_o.values
-    temp = test_norm_o.drop('MEDV', axis = 1)
-    test = temp.values
+    mse_np = np.mean((b - ans)**2)
+    print("MSE using numpy's solution: ", mse_np)
 
-    A = data[:, :-1]
-    b = data[:, -1].T
+need = ['INDUS', 'TAX', 'MEDV']
+three_d_linear_regression(need)
+three_d_linear_regression(need, True)
 
-    Q, R = np.linalg.qr(A)
-
-    x = np.linalg.solve(R, np.dot(Q.T, b))
-    print(np.dot(test, x))
-    return (np.dot(test, x))
-    
-
-def cal_loss(ans, test):
-    loss = 0
-    for i in range(len(ans)):
-        loss += (ans[i] - test[i])**2
-    return loss//len(ans)
-
-need = ['TAX', 'AGE', 'MEDV']
-data = data_o[need]
-test = test_o[need[: -1]]
-ans = three_d_linear_regression(need,data, test)
-print("Least squares", cal_loss(ans, test_o[need[-1]]))
-
-
-data = data_norm_o[need]
-test = test_norm_o[need[: -1]]
-ans = three_d_linear_regression(need,data, test, True)
-print("Least squares", cal_loss(ans, test_norm_o[need[-1]]))
-
-# plt.show() 
+plt.show() 
 print("original data")
 ans = all_D()
-print("Least squares", cal_loss(ans, test_o[need[-1]]))
-ans = all_D_norm()
-print("Least squares", cal_loss(ans, test_o[need[-1]]))
 
 # correlation = data_o.corr()['MEDV'].abs().sort_values(ascending=False)
 # print(correlation)
