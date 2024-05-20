@@ -3,8 +3,10 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 from sklearn.preprocessing import StandardScaler
+import time
 
 data_o = pd.read_csv('./data/housing_data.csv')
+data_norm_o = pd.read_csv('./data/housing_data_normalized.csv')
 test_o = pd.read_csv('./data/test.csv')
 test_norm_o = pd.read_csv('./data/test_norm.csv')
 
@@ -13,9 +15,11 @@ def function_3(p_m, x):
         return a
 
 def three_d_linear_regression(need, norm = False, draw = True):
+    current_time = time.time()
     if norm:
         scaler = StandardScaler()
-        data = scaler.fit_transform(data_o[need[:-1]])
+        # data = scaler.fit_transform(data_o[need[:-1]])
+        data = data_norm_o[need[:-1]]
         draw_d = np.column_stack((data, data_o['MEDV']))
         draw_d = pd.DataFrame(draw_d, columns=need)
         test = test_norm_o[need[:-1]]
@@ -78,6 +82,7 @@ def three_d_linear_regression(need, norm = False, draw = True):
 
     mse_np = np.mean((test_o[need[-1]] - ans)**2)
     print("MSE using numpy's solution: ", mse_np)
+    print("cost time : ", time.time() - current_time)
 
 def all_D():
     data = data_o.values
@@ -96,13 +101,23 @@ def all_D():
     mse_np = np.mean((b - ans)**2)
     print("MSE using numpy's solution: ", mse_np)
 
-need = ['INDUS', 'TAX', 'MEDV']
-three_d_linear_regression(need)
-three_d_linear_regression(need, True)
+def cal_correlation():
+    # calculate correlation by matrix
+    sigma = data_o.cov()
+    e = np.eye(sigma.shape[0])
+    variance = e * sigma
+    v = np.sqrt(variance)
+    I = np.linalg.inv(v)
+    cov = np.dot(I, np.dot(sigma, I))
+    print(cov)
 
-plt.show() 
-print("original data")
-ans = all_D()
+# need = ['INDUS', 'TAX', 'MEDV']
+# three_d_linear_regression(need)
+# three_d_linear_regression(need, True)
 
-# correlation = data_o.corr()['MEDV'].abs().sort_values(ascending=False)
-# print(correlation)
+# plt.show() 
+# print("original data")
+# ans = all_D()
+
+cal_correlation()
+
