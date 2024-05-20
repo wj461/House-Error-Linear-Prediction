@@ -7,8 +7,11 @@ import time
 
 data_o = pd.read_csv('./data/housing_data.csv')
 data_norm_o = pd.read_csv('./data/housing_data_normalized.csv')
-test_o = pd.read_csv('./data/test.csv')
-test_norm_o = pd.read_csv('./data/test_norm.csv')
+# test_o = pd.read_csv('./data/test.csv')
+# test_norm_o = pd.read_csv('./data/test_norm.csv')
+# test_o = pd.read_csv('./data/housing_data.csv')
+# test_norm_o = pd.read_csv('./data/housing_data_normalized.csv')
+
 
 def function_3(p_m, x):
         a = np.dot(p_m, x)
@@ -85,6 +88,7 @@ def three_d_linear_regression(need, norm = False, draw = True):
     print("cost time : ", time.time() - current_time)
 
 def all_D():
+    current_time = time.time()
     data = data_o.values
     temp = test_o.drop('MEDV', axis = 1)
     test = temp.values
@@ -100,6 +104,7 @@ def all_D():
 
     mse_np = np.mean((b - ans)**2)
     print("MSE using numpy's solution: ", mse_np)
+    print("cost time : ", time.time() - current_time)
 
 def cal_correlation():
     # calculate correlation by matrix
@@ -111,13 +116,21 @@ def cal_correlation():
     cov = np.dot(I, np.dot(sigma, I))
     print(cov)
 
-# need = ['INDUS', 'TAX', 'MEDV']
-# three_d_linear_regression(need)
-# three_d_linear_regression(need, True)
+need = ['INDUS', 'TAX', 'MEDV']
+print("need : ", need)
+three_d_linear_regression(need)
+three_d_linear_regression(need, True)
+print()
 
-# plt.show() 
-# print("original data")
-# ans = all_D()
+need = ['RM', 'CHAS', 'MEDV']
+print("need : ", need)
+three_d_linear_regression(need)
+three_d_linear_regression(need, True)
+print()
+
+plt.show() 
+print("original data")
+ans = all_D()
 
 cal_correlation()
 
