@@ -7,8 +7,8 @@ import time
 
 data_o = pd.read_csv('./data/housing_data.csv')
 data_norm_o = pd.read_csv('./data/housing_data_normalized.csv')
-# test_o = pd.read_csv('./data/test.csv')
-# test_norm_o = pd.read_csv('./data/test_norm.csv')
+test_o = pd.read_csv('./data/test.csv')
+test_norm_o = pd.read_csv('./data/test_norm.csv')
 # test_o = pd.read_csv('./data/housing_data.csv')
 # test_norm_o = pd.read_csv('./data/housing_data_normalized.csv')
 
@@ -126,7 +126,7 @@ need = ['RM', 'CHAS', 'MEDV']
 print("need : ", need)
 three_d_linear_regression(need)
 three_d_linear_regression(need, True)
-print()
+# print()
 
 plt.show() 
 print("original data")
